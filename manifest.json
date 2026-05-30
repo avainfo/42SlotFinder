@@ -1,0 +1,23 @@
+{
+	"manifest_version": 3,
+	"name": "42 Slot Watcher",
+	"version": "0.1.0",
+	"description": "Watch 42 evaluation slots by pattern",
+	"content_scripts": [
+		{
+			"matches": [
+				"https://projects.intra.42.fr/projects/*",
+				"https://*.42network.org/*"
+			],
+			"js": [
+				"dist/index.js"
+			],
+			"css": [
+				"injected.css"
+			]
+		}
+	],
+	"permissions": [
+		"storage"
+	]
+}
