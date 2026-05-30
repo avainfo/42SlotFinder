@@ -1,0 +1,12 @@
+#slot-watcher-panel {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+	z-index: 999999;
+	padding: 10px 14px;
+	background: #111;
+	color: white;
+	border-radius: 8px;
+	font-family: Arial, sans-serif;
+	font-size: 14px;
+}
