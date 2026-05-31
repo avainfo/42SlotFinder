@@ -7,8 +7,6 @@ import {
 
 import {fetchSlots} from "./utils/slots-management";
 
-console.log("[42 Slot Watcher] loaded");
-
 function createDebugPanel(): void {
 	if (document.querySelector("#slot-watcher-panel")) {
 		return;
@@ -70,10 +68,35 @@ function updatePatternText(): void {
 }
 
 function main(): void {
-	console.log("[42 Slot Watcher] starting");
+	console.log("[42 Slot Watcher] loaded");
+
 	// fetchSlots().then(value => console.log(value));
 	setupCalendarSelection();
 	createDebugPanel();
 }
+
+declare const browser: {
+	runtime: {
+		onMessage: {
+			addListener: (
+				callback: (message: { type?: string }) => void,
+			) => void;
+		};
+	};
+};
+
+browser.runtime.onMessage.addListener((message) => {
+	if (message.type === "START_RECORDING") {
+		startRecording();
+	}
+
+	if (message.type === "STOP_RECORDING") {
+		stopRecording();
+	}
+
+	if (message.type === "START_SEARCHING") {
+		console.log("[42 Slot Watcher] start searching");
+	}
+});
 
 main();
