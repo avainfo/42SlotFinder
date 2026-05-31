@@ -1,4 +1,4 @@
-import {SlotResponse} from "./slot-types";
+import {SlotPattern, SlotResponse} from "./slot-types";
 
 function formatLocalDate(date: Date): string {
 	const year: string = String(date.getFullYear());
@@ -76,4 +76,32 @@ export async function fetchSlots(): Promise<SlotResponse[]> {
 	}
 
 	return response.json() as Promise<SlotResponse[]>;
+}
+
+export function timeToString(time: string): { time: string, state: string } {
+	const [hours, minutes] = time.split(":");
+	const state = parseInt(hours) > 12;
+	return {
+		time: (parseInt(hours) % 12 == 0 ? 12 : parseInt(hours) % 12) + ":" + minutes,
+		state: (state || hours == "12" ? " PM" : " AM")
+	}
+}
+
+export function placeSlot(slot: SlotPattern): void {
+	const height: HTMLElement | null = document.querySelector(".fc-time-grid");
+	if (!height)
+		throw new Error("Unable to find time grid");
+	const pxPerMinute = height.offsetHeight / (24 * 60);
+	const start: number[] = slot.startTime.split(":").map(Number);
+	const end: number[] = slot.endTime.split(":").map(Number);
+	const top: number = (start[0] * 60 + start[1]) * pxPerMinute;
+	const bottom: number = (end[0] * 60 + end[1]) * pxPerMinute;
+	const element = `<a class=\"fc-time-grid-event fc-v-event fc-event fc-start fc-end\" style=\"inset: 1189px 0 -1264.35px; z-index: 1;\">" +
+		"<div class=\"fc-content\">" +
+		"<div class=\"fc-time\" data-start=\"7:45\" data-full=\"7:45 PM - 9:00 PM\">" +
+		"<span>${slot.startTime} - ${slot.endTime}</span>" +
+		"</div>" +
+		"<div class=\"fc-title\">Available</div>" +
+		"</div><div class=\"fc-bg\"></div>" +
+		"</a>`
 }

@@ -5,7 +5,7 @@ import {
 	getCurrentPattern,
 } from "./events/mouse-events";
 
-import {fetchSlots} from "./utils/slots-management";
+import {fetchSlots, timeToString} from "./utils/slots-management";
 
 function createDebugPanel(): void {
 	if (document.querySelector("#slot-watcher-panel")) {
@@ -73,6 +73,9 @@ function main(): void {
 	// fetchSlots().then(value => console.log(value));
 	setupCalendarSelection();
 	createDebugPanel();
+	for (let i = 0; i < 24; i++) {
+		console.log(timeToString(`${i}:10`))
+	}
 }
 
 declare const browser: {
