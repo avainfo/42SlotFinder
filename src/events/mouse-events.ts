@@ -1,6 +1,6 @@
 import {SlotPattern} from "../utils/slot-types";
 
-let isRecording = true;
+let isRecording = false;
 let isDragging = false;
 let dragStartY = 0;
 let selectionBox: HTMLDivElement | null = null;
