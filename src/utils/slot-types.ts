@@ -1,4 +1,5 @@
 export type SlotPattern = {
+	date: string | null;
 	startTime: string;
 	endTime: string;
 };

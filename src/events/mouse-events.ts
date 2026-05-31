@@ -5,6 +5,8 @@ let isDragging = false;
 let dragStartY = 0;
 let selectionBox: HTMLDivElement | null = null;
 let currentPattern: SlotPattern | null = null;
+let selectedDayRect: DOMRect | null = null;
+let selectedDayDate: string | null = null;
 
 export function startRecording(): void {
 	isRecording = true;
@@ -25,6 +27,9 @@ export function stopRecording(): SlotPattern | null {
 		selectionBox.remove();
 		selectionBox = null;
 	}
+
+	selectedDayRect = null;
+	selectedDayDate = null;
 
 	console.log("[42 Slot Watcher] recording stopped");
 	console.log("[42 Slot Watcher] final pattern:", currentPattern);
@@ -62,11 +67,23 @@ function onSelectionStart(event: MouseEvent): void {
 		return;
 	}
 
+	const dayCell = getDayCellFromX(event.clientX);
+
+	if (!dayCell) {
+		console.warn("[42 Slot Watcher] no day column found");
+		return;
+	}
+
+	selectedDayDate = dayCell.dataset.date ?? null;
+
 	event.preventDefault();
 	event.stopPropagation();
 
 	isDragging = true;
 	dragStartY = event.clientY;
+
+	selectedDayRect = dayCell.getBoundingClientRect();
+	selectedDayDate = dayCell.dataset.date ?? null;
 
 	selectionBox = document.createElement("div");
 	selectionBox.className = "slot-watcher-selection-box";
@@ -115,24 +132,16 @@ function onSelectionEnd(event: MouseEvent): void {
 }
 
 function updateSelectionBox(currentY: number): void {
-	if (!selectionBox) {
+	if (!selectionBox || !selectedDayRect) {
 		return;
 	}
-
-	const timeGrid = document.querySelector<HTMLElement>(".fc-time-grid");
-
-	if (!timeGrid) {
-		return;
-	}
-
-	const rect = timeGrid.getBoundingClientRect();
 
 	const top = Math.min(dragStartY, currentY);
 	const bottom = Math.max(dragStartY, currentY);
 
-	selectionBox.style.left = `${rect.left}px`;
+	selectionBox.style.left = `${selectedDayRect.left}px`;
 	selectionBox.style.top = `${top}px`;
-	selectionBox.style.width = `${rect.width}px`;
+	selectionBox.style.width = `${selectedDayRect.width}px`;
 	selectionBox.style.height = `${bottom - top}px`;
 }
 
@@ -151,8 +160,9 @@ function buildPatternFromSelection(
 	}
 
 	return {
-		startTime,
-		endTime,
+		date: selectedDayDate,
+		startTime: startTime,
+		endTime: endTime,
 	};
 }
 
@@ -184,4 +194,20 @@ function getClosestTimeFromY(clientY: number): string | null {
 	}
 
 	return closestTime.slice(0, 5);
+}
+
+function getDayCellFromX(clientX: number): HTMLElement | null {
+	const dayCells = document.querySelectorAll<HTMLElement>(
+		".fc-bg .fc-day[data-date]",
+	);
+
+	for (const dayCell of dayCells) {
+		const rect = dayCell.getBoundingClientRect();
+
+		if (clientX >= rect.left && clientX <= rect.right) {
+			return dayCell;
+		}
+	}
+
+	return null;
 }
