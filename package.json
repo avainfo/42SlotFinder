@@ -4,11 +4,12 @@
 	"description": "Browser extension to find 42 evaluation slot patterns.",
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "tsc",
-		"watch": "tsc --watch"
+		"build": "esbuild src/index.ts --bundle --outfile=dist/index.js --target=es2020",
+		"watch": "esbuild src/index.ts --bundle --outfile=dist/index.js --target=es2020 --watch"
 	},
 	"devDependencies": {
 		"@types/firefox-webext-browser": "^143.0.0",
+		"esbuild": "^0.28.0",
 		"typescript": "^5.9.3",
 		"vite": "^8.0.14"
 	},
