@@ -10,7 +10,8 @@
 	"version": "0.1.0",
 	"description": "Watch 42 evaluation slots by pattern",
 	"action": {
-		"default_title": "42 Slot Watcher"
+		"default_title": "42 Slot Watcher",
+		"default_popup": "src/popup/popup.html"
 	},
 	"content_scripts": [
 		{

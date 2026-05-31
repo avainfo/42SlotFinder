@@ -1,0 +1,10 @@
+body {
+	box-sizing: border-box;
+	padding: 16px;
+}
+
+#status-content, #pattern-content, #popup-buttons {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
