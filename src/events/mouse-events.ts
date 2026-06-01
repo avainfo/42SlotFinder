@@ -1,4 +1,5 @@
 import {SlotPattern} from "../utils/slot-types";
+import {placeSlot} from "../utils/slots-management";
 
 let isRecording = false;
 let isDragging = false;
@@ -114,7 +115,7 @@ function onSelectionEnd(event: MouseEvent): void {
 
 	isDragging = false;
 
-	const pattern = buildPatternFromSelection(dragStartY, event.clientY);
+	const pattern: SlotPattern | null = buildPatternFromSelection(dragStartY, event.clientY);
 
 	if (selectionBox) {
 		selectionBox.remove();
@@ -129,6 +130,8 @@ function onSelectionEnd(event: MouseEvent): void {
 	currentPattern = pattern;
 
 	console.log("[42 Slot Watcher] selected pattern:", currentPattern);
+
+	placeSlot(pattern);
 }
 
 function updateSelectionBox(currentY: number): void {

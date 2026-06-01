@@ -88,20 +88,50 @@ export function timeToString(time: string): { time: string, state: string } {
 }
 
 export function placeSlot(slot: SlotPattern): void {
-	const height: HTMLElement | null = document.querySelector(".fc-time-grid");
-	if (!height)
+	if (!slot.date)
+		throw new Error("Slot date is null");
+
+	const date: Date = new Date(Date.parse(slot.date))
+
+	const grid: HTMLElement | null = document.querySelector(".fc-time-grid");
+	if (!grid)
 		throw new Error("Unable to find time grid");
-	const pxPerMinute = height.offsetHeight / (24 * 60);
+	const columns: NodeListOf<HTMLElement> = grid.querySelectorAll(".fc-content-skeleton td")
+	if (!columns || columns[date.getDate()] == undefined)
+		throw new Error("Unable to find columns");
+	const eventContainer: HTMLElement | null = columns[date.getDate()].querySelector(".fc-event-container")
+	if (!eventContainer)
+		throw new Error("Unable to find event container");
+
+	const events: NodeListOf<Element> = grid.querySelectorAll('.fc-time-grid-event.fc-v-event.fc-event:not(.sf-active)');
+	events.forEach((e) => e.remove())
+
+	const pxPerMinute = grid.offsetHeight / (24 * 60);
+
+	const startTime: { time: string, state: string } = timeToString(slot.startTime);
+	const endTime: { time: string, state: string } = timeToString(slot.endTime);
+
+	const startFullTime: string = startTime.time + " " + startTime.state;
+	const endFullTime: string = endTime.time + " " + endTime.state;
+
 	const start: number[] = slot.startTime.split(":").map(Number);
 	const end: number[] = slot.endTime.split(":").map(Number);
+	console.log("[42 Slot Watcher] placing slot:", start, end);
+
 	const top: number = (start[0] * 60 + start[1]) * pxPerMinute;
 	const bottom: number = (end[0] * 60 + end[1]) * pxPerMinute;
-	const element = `<a class=\"fc-time-grid-event fc-v-event fc-event fc-start fc-end\" style=\"inset: 1189px 0 -1264.35px; z-index: 1;\">" +
-		"<div class=\"fc-content\">" +
-		"<div class=\"fc-time\" data-start=\"7:45\" data-full=\"7:45 PM - 9:00 PM\">" +
-		"<span>${slot.startTime} - ${slot.endTime}</span>" +
-		"</div>" +
-		"<div class=\"fc-title\">Available</div>" +
-		"</div><div class=\"fc-bg\"></div>" +
-		"</a>`
+
+	const element = `<a class=\"sf-active fc-time-grid-event fc-v-event fc-event fc-start fc-end\" ` +
+		`style=\"inset: ${top}px 0 -${bottom}px; z-index: 1;\">` +
+		`<div class=\"fc-content\">` +
+		`<div class=\"fc-time\" data-start=\"${start[0]}:${start[0]}\" ` +
+		`data-full=\"${startFullTime} - ${endFullTime}\">` +
+		`<span>${slot.startTime} - ${slot.endTime}</span>` +
+		`</div>` +
+		`<div class=\"fc-title\">Available</div>` +
+		`</div><div class="fc-bg"></div>` +
+		`</a>`
+
+	console.log("[42 Slot Watcher] placing slot:", element);
+	eventContainer.insertAdjacentHTML("beforeend", element);
 }
